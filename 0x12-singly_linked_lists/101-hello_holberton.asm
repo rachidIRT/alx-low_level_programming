@@ -11,5 +11,5 @@ main:
 	ret
 
 	SECTION .data
-message:	db "Hello, Holberton", 0
-format:	db "%s", 10, 0
+msg:	db "Hello, Holberton", 0
+fmt:	db "%s", 10, 0
