@@ -1,21 +1,15 @@
-extern printf
-
-section .text
-global main
-
+SECTION .text
+	extern printf
+	global main
 main:
-push rbp
+	mov esi, msg
+	mov edi, fmt
+	mov eax, 0
+	call printf
 
-mov rdi, format
-mov rsi, message
-mov rax, 0
-call printf
+	mov eax, 0
+	ret
 
-pop rbp
-
-mov rax, 0
-ret
-
-section .data
-message:
-	db "Hello, Holberton", 10 ; 10 is the ASCII code for a new line
+	SECTION .data
+message:	db "Hello, Holberton", 0
+format:	db "%s", 10, 0
