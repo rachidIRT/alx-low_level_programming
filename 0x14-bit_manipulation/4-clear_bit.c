@@ -11,15 +11,15 @@
  */
 int clear_bit(unsigned long int *n, unsigned int index)
 {
-	unsigned int pox;
+	unsigned int p;
 
 	if (index > 63)
 		return (-1);
 
-           pox = 1 << index;
+           p = 1 << index;
 
-	if (*n & pox)
-		*n ^= pox;
+	if (*n & p)
+		*n ^= p;
 
 	return (1);
 }
