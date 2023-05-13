@@ -1,72 +1,90 @@
 #include "main.h"
-#include <stdio.h>
+#define BUF_SIZE 1024
 
 /**
- * error_file - checks if files can be opened.
- * @file_from: file_from.
- * @file_to: file_to.
- * @argv: arguments vector.
- * Return: no return.
- */
-void error_file(int file_from, int file_to, char *argv[])
+* main - main
+* @argc: number of arguments
+* @argv: a pointer point to the array of arguments
+* Return: Always 0
+**/
+
+int main(int argc, char **argv)
 {
-	if (file_from == -1)
+	int f0, f1, res0, res1;
+	char *buffer;
+
+	if (argc != 3)
 	{
-		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
-		exit(98);
+		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
+		exit(97);
 	}
-	if (file_to == -1)
+	buffer = malloc(sizeof(char) * BUF_SIZE);
+	if (!buffer)
+		return (0);
+
+	f1 = open(argv[1], O_RDONLY);
+	error_98(f1, buffer, argv[1]);
+	f0 = open(argv[2], O_WRONLY | O_TRUNC | O_CREAT, 0664);
+	error_99(f0, buffer, argv[2]);
+	do {
+		res0 = read(f1, buffer, BUF_SIZE);
+		if (res0 == 0)
+			break;
+		error_98(res0, buffer, argv[1]);
+		res1 = write(f0, buffer, res0);
+		error_99(res1, buffer, argv[2]);
+	} while (res1 >= BUF_SIZE);
+	res0 = close(f0);
+	error_100(res0, buffer);
+	res0 = close(f1);
+	error_100(res0, buffer);
+	free(buffer);
+	return (0);
+}
+
+/**
+* error_98 - checks error 98
+* @f0: the value to check
+* @buffer: the buffer
+* @argv: argument
+**/
+void error_98(int f0, char *buffer, char *argv)
+{
+
+	if (f0 < 0)
 	{
-		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
-		exit(99);
+		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv);
+		free(buffer);
+		exit(98);
 	}
 }
 
 /**
- * main - check the code for Holberton School students.
- * @argc: number of arguments.
- * @argv: arguments vector.
- * Return: Always 0.
- */
-int main(int argc, char *argv[])
+* error_99 - checks error 99
+* @f0: value to check
+* @buffer: the buffer
+* @argv: argument
+*/
+void error_99(int f0, char *buffer, char *argv)
 {
-	int fille_behind, fille_infront, err_join;
-	ssize_t nchars, nwr;
-	char buf[1024];
-
-	if (argc != 3)
+	if (f0 < 0)
 	{
-		dprintf(STDERR_FILENO, "%s\n", "Usage: cp file_from file_to");
-		exit(97);
+		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv);
+		free(buffer);
+		exit(99);
 	}
-
-	fille_behind = open(argv[1], O_RDONLY);
-	file_to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC | O_APPEND, 0664);
-	error_file(fille_behind, fille_infront, argv);
-
-	nchars = 1024;
-	while (nchars == 1024)
+}
+/**
+* error_100 - checks error 100
+* @f0: the value to check
+* @buffer: the buffer
+*/
+void error_100(int f0, char *buffer)
+{
+	if (f0 < 0)
 	{
-		nchars = read(fille_behind, buf, 1024);
-		if (nchars == -1)
-			error_file(-1, 0, argv);
-		nwr = write(fille_infront, buf, nchars);
-		if (nwr == -1)
-			error_file(0, -1, argv);
-	}
-
-	err_join = close(fille_behind);
-	if (err_join == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fille_behind);
+		dprintf(STDERR_FILENO, "Error: Can't close fd %i\n", f0);
+		free(buffer);
 		exit(100);
 	}
-
-	err_join = close(fille_infront);
-	if (err_join == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fille_behind);
-		exit(100);
-	}
-	return (0);
 }
